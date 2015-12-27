@@ -1,0 +1,74 @@
+Linear Regression
+========================================================
+
+***
+Test Case: 
+Predict house price by surface and nr of rooms
+***
+
+### Read data
+```{r}
+data <- read.csv('ex1data2.txt', sep = ',')
+price <- data[,3]
+size <- data[,1]
+room <- data[,2]
+```
+
+
+### Linear regression
+```{r}
+lr <- lm(price ~ size + room) 
+```
+
+
+### Model results
+```{r}
+summary(lr)
+coef(lr)
+fitted(lr) # predicted value for y
+```
+
+
+### Evaluate results
+```{r}
+layout(matrix(1:4, 2, 2))
+plot(lr)
+```
+
+
+### Compare with expected coef
+```{r}
+# expected coef
+ex0 = 89597.909545
+ex1 = 139.210674
+ex2 = -8738.019113
+
+# statics from summary
+lr0 <- coef(lr)[1]
+lr1 <- coef(lr)[2]
+lr2 <- coef(lr)[3]
+se0 <- coef(summary(lr))[1,2]
+se1 <- coef(summary(lr))[2,2]
+se2 <- coef(summary(lr))[3,2]
+df  <- df.residual(lr)
+
+# t-test
+t0 <- abs((ex0 - lr0)/ se0)
+t1 <- abs((ex1 - lr1)/ se1)
+t2 <- abs((ex2 - lr2)/ se2)
+# calculate probability for t
+# one-tailed probability that there is no difference between the expected and lm model
+# double this value for a two-tailed evaluation; difference is significant at p = 0.05
+p0 <- pt(t0, df, lower.tail = FALSE); p0
+p1 <- pt(t1, df, lower.tail = FALSE); p1
+p2 <- pt(t2, df, lower.tail = FALSE); p2
+
+```
+
+
+### Make prediction
+```{r}
+newdata <- data.frame(size=1650, room=3)
+predict(lr, newdata, level = 0.9, interval = "confidence")
+```
+
